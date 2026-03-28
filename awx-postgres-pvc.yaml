@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: awx-postgres-13-pvc
+  namespace: awx
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: nfs-readynas
+  resources:
+    requests:
+      storage: 10Gi

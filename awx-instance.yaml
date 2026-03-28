@@ -1,0 +1,56 @@
+apiVersion: awx.ansible.com/v1beta1
+kind: AWX
+metadata:
+  name: awx
+  namespace: awx
+spec:
+  # --- Admin credentials ---
+  admin_user: admin
+  admin_email: hfaleye@hotmail.com
+
+  # --- Service type (NodePort for VirtualBox access) ---
+  service_type: NodePort
+  nodeport_port: 30080
+
+  # --- Hostname (must match Ingress host) ---
+  hostname: awx.homelab.local
+
+  # --- PostgreSQL configuration ---
+  postgres_storage_class: nfs-readynas
+  postgres_storage_requirements:
+    requests:
+      storage: 10Gi
+
+  # --- Projects persistent storage ---
+  projects_persistence: true
+  projects_storage_class: nfs-readynas
+  projects_storage_size: 8Gi
+  projects_existing_claim: awx-projects-pvc
+
+  # --- Resource requests/limits ---
+  web_resource_requirements:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+
+  task_resource_requirements:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 2000m
+      memory: 2Gi
+
+  # --- Postgres init container to fix NFS permissions ---
+  postgres_init_container_commands: |
+    chown -R 26:26 /var/lib/pgsql/data
+
+  # --- Extra settings ---
+  extra_settings:
+    - setting: SESSION_COOKIE_SECURE
+      value: "False"
+    - setting: CSRF_COOKIE_SECURE
+      value: "False"
