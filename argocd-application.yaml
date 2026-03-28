@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ansible-awx
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/kabongongoy/ansible-awx.git
+    targetRevision: main
+    path: .
+    directory:
+      recurse: false
+      exclude: '{CLAUDE.md,argocd-application.yaml}'
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: awx
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
